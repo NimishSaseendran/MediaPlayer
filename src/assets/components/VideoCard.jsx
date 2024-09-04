@@ -2,23 +2,56 @@ import React, { useState } from 'react'
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Modal from 'react-bootstrap/Modal';
+import { toast } from 'react-toastify';
+import { deleteVideos, addHistory } from '../../services/allApis';
 
-function VideoCard() {
+
+function VideoCard({video, response, cat}) {
 
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    const handleShow = async() => {
+        setShow(true)
+        const dt = new Date()
+        const data = {videoId:video.videoId,title:video.title,videoUrl:video.videoUrl, datetime:dt}
+        console.log(data);
+        const result = await addHistory(data)
+        console.log(result);
+        
+        
+    };
+
+    const handleDelete =async () =>{  
+        const res =await deleteVideos(video.id)  
+        if(res.status == 200)  {
+            toast.success("Video deleted successfully!!!") 
+            response(res)
+        } else {
+            toast.error("Video Delete Failed")
+        }
+          
+    }
+
+    const handleDrag = (e) =>{
+        console.log(e);
+        console.log(video);
+        e.dataTransfer.setData("video", JSON.stringify(video))
+    }
 
     return (
+
         <>
-            <Card style={{ width: '18rem' }}>
-                <Card.Img onClick={handleShow} style={{ cursor: 'pointer' }} variant="top" src="https://i.ytimg.com/vi/RLzC55ai0eo/maxresdefault.jpg" />
+            <Card style={cat?{width:'100%'}:{ width: '18rem' }} className='mb-3' onDragStart={(e)=>{handleDrag(e)}} draggable>
+                <Card.Img  style={{ cursor: 'pointer', height:'150px', objectFit:'cover'}} onClick={handleShow} variant="top" src={video?.imageUrl} />
                 <Card.Body>
-                    <Card.Title>Heeriye</Card.Title>
-                    <Button variant="btn">
+                    <Card.Title>{video?.title}</Card.Title>
+                    {
+                        !cat &&
+                        <Button variant="btn" onClick={handleDelete}>
                         <i className="fa-solid fa-trash-can" style={{ color: "#ff0000", }} />
                     </Button>
+                    }
                 </Card.Body>
             </Card>
 
@@ -29,10 +62,10 @@ function VideoCard() {
                 keyboard={false}
             >
                 <Modal.Header closeButton>
-                    <Modal.Title>Modal title</Modal.Title>
+                    <Modal.Title>{video?.title}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <iframe width="100%" height="315" src="https://www.youtube.com/embed/RLzC55ai0eo?si=_7QgF4mvcuVObgn-&autoplay=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                    <iframe width="100%" height="315" src={video?.videoUrl} title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>

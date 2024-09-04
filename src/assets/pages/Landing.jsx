@@ -15,7 +15,7 @@ function Landing() {
                         </h2>
                         <p style={{ textAlign: 'justify' }}>Media Player is an online platform for youtube video uploads and management.</p>
                         <div className="d-grid">
-                            <Link to={'/home'} className='btn btn-info'>Let's Go</Link>
+                            <Link to={'/log'} className='btn btn-info'>Let's Go</Link>
                         </div>
                     </Col>
                     <Col className='py-4 text-center' sm={12} md={6}>
